@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import os
-import sys
 import time
 
 
@@ -46,7 +45,7 @@ def find_node(image: cv2.typing.MatLike, debug=False):
     # https://www.geeksforgeeks.org/python-opencv-find-center-of-contour/
     contours, hierarchies = cv2.findContours(
         red_mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    
+
     if debug:
         contour_canvas = np.zeros(red_mask.shape[:2], dtype='uint8')
         cv2.drawContours(contour_canvas, contours, -1, (255, 0, 0), 5)
@@ -58,15 +57,15 @@ def find_node(image: cv2.typing.MatLike, debug=False):
     longest_contour = None
     for i, c in enumerate(contours):
         # print(f"{i}, length {len(c)}: {c}")
-        if len(c) > max_contour_len:
+        if len(c) >= max_contour_len:
             max_contour_len = len(c)
             longest_contour = c
 
-    M = cv2.moments(longest_contour) # type: ignore
+    mom = cv2.moments(longest_contour) # type: ignore
     center_found = False
-    if M['m00'] != 0:
-        cx = int(M['m10']/M['m00'])
-        cy = int(M['m01']/M['m00'])
+    if mom['m00'] != 0:
+        cx = int(mom['m10']/mom['m00'])
+        cy = int(mom['m01']/mom['m00'])
         center_found = True
         if debug:
             # cv2.drawContours(overlaid_image, [i], -1, (0, 255, 0), 2)
@@ -76,11 +75,12 @@ def find_node(image: cv2.typing.MatLike, debug=False):
             # print(f"x: {cx} y: {cy}")
     else:
         # This might happen if no node is detected
-        print("No red detected", file=sys.stderr)
+        # print("No red detected")
+        pass
 
     center = (cx, cy) if center_found else None
     toc = time.perf_counter()
-    print(f"find_node: took {toc-tic: 0.4f} s", file=sys.stderr)
+    # print(f"find_node: node at {center}, took {toc-tic: 0.4f} s")
 
     if debug:
         if center:
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         output_test_dir_path = os.path.join(
             output_path, dir_entry.name.split('.')[0])
         os.makedirs(output_test_dir_path, exist_ok=True)
-        
+
         cv2.imwrite(
             os.path.join(output_test_dir_path, "original_img.jpg"), img)
         cv2.imwrite(
