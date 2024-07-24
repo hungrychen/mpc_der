@@ -2,9 +2,13 @@ import cv2
 import numpy as np
 import os
 import time
+from utils import *
 
 
-def find_node(image: cv2.typing.MatLike, debug=False):
+def find_node(image: cv2.typing.MatLike,
+              color: int,
+              num_nodes: int = 1,
+              debug: bool = False):
     """
     Normally:
     ---
@@ -20,39 +24,20 @@ def find_node(image: cv2.typing.MatLike, debug=False):
     """
     tic = time.perf_counter()
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-    # Setting saturation and value numbers to accept wider ranges will
-    # mean darker reds are also accepted
-
-    # Masking code generated from ChatGPT
-
-    # Define the lower range for red
-    lower_red1 = np.array([0, 55, 55])
-    upper_red1 = np.array([10, 255, 255])
-
-    # Define the upper range for red
-    lower_red2 = np.array([170, 55, 55])
-    upper_red2 = np.array([180, 255, 255])
-
-    # Create masks for both ranges
-    mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
-    mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
-
-    # Combine the masks
-    red_mask = cv2.bitwise_or(mask1, mask2)
+    color_mask = get_mask(hsv_image, color)
 
     # Code from below:
     # https://www.geeksforgeeks.org/python-opencv-find-center-of-contour/
     contours, hierarchies = cv2.findContours(
-        red_mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        color_mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
     if debug:
-        contour_canvas = np.zeros(red_mask.shape[:2], dtype='uint8')
+        contour_canvas = np.zeros(color_mask.shape[:2], dtype='uint8')
         cv2.drawContours(contour_canvas, contours, -1, (255, 0, 0), 5)
 
     overlaid_image = image.copy()
 
-    # Consider the longest contour
+    # TODO: Consider the n longest contours
     max_contour_len = 0
     longest_contour = None
     for i, c in enumerate(contours):
@@ -85,8 +70,48 @@ def find_node(image: cv2.typing.MatLike, debug=False):
     if debug:
         if center:
             cv2.circle(overlaid_image, center, 15, (0, 255, 0), -1)
-        return center, red_mask, contour_canvas, overlaid_image
+        return center, color_mask, contour_canvas, overlaid_image
     return center
+
+
+def get_mask(hsv_image: cv2.typing.MatLike, color: int):
+    """
+    With the hsv image as input, return the masked image for the color
+    indicated
+    """
+    # Setting saturation and value numbers to accept wider ranges will
+    # mean darker colors are also accepted
+    # Masking code started with code from ChatGPT
+
+    if color == RED:
+        # Define the lower range for red
+        lower_red1 = np.array([0, 55, 55])
+        upper_red1 = np.array([10, 255, 255])
+
+        # Define the upper range for red
+        lower_red2 = np.array([170, 55, 55])
+        upper_red2 = np.array([180, 255, 255])
+
+        # Create masks for both ranges
+        mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
+        mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
+
+        # Combine the masks
+        color_mask = cv2.bitwise_or(mask1, mask2)
+    elif color == YELLOW:
+        lower_yellow = np.array([20, 55, 55])
+        upper_yellow = np.array([40, 255, 255])
+
+        color_mask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
+    elif color == GREEN:
+        lower_green = np.array([50, 55, 55])
+        upper_green = np.array([80, 255, 255])
+
+        color_mask = cv2.inRange(hsv_image, lower_green, upper_green)
+    else:
+        raise ValueError("Color not available")
+    
+    return color_mask
 
 
 # For testing
@@ -97,7 +122,7 @@ if __name__ == "__main__":
         filepath = dir_entry.path
         img = cv2.imread(filepath)
 
-        center, red_mask, contour_canvas, image = find_node(img, True) # type: ignore
+        center, red_mask, contour_canvas, image = find_node(img, GREEN, True) # type: ignore
         print(f"\"{filepath}\", center is: {center}")
         output_test_dir_path = os.path.join(
             output_path, dir_entry.name.split('.')[0])

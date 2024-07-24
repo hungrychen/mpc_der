@@ -3,6 +3,7 @@
 
 import cv2
 from find_node import find_node
+from utils import *
 
 
 def main():
@@ -14,9 +15,15 @@ def main():
         ret, frame = vid.read()
     
         # Display the resulting frame
-        node = find_node(frame)
-        if node:
-            cv2.circle(frame, node, 5, (255, 0, 0), 20, -1) # type: ignore
+        red_node = find_node(frame, RED)
+        yellow_node = find_node(frame, YELLOW)
+        green_node = find_node(frame, GREEN)
+        if red_node:
+            cv2.circle(frame, red_node, 5, (0, 0, 255), 5, -1)
+        if yellow_node:
+            cv2.circle(frame, yellow_node, 5, (0, 255, 255), 5, -1)
+        if green_node:
+            cv2.circle(frame, green_node, 5, (0, 255, 0), 5, -1)
         cv2.imshow('frame', frame)
 
         # Press 'q' to quit

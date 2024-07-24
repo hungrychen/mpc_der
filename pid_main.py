@@ -39,7 +39,7 @@ def main():
                 pid_controller.setpoint = num
         
         ret, frame = vid.read()
-        node_center = find_node(frame)
+        node_center = find_node(frame, RED)
         if node_center:
             if len(sys.argv) == 2 and sys.argv[1] == "-v":
                 cv2.circle(frame, node_center, 5, (255, 0, 0), 20, -1)
