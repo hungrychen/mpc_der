@@ -47,9 +47,9 @@ class Motor:
         target_pos = curr_pos + adjustment
         if target_pos < 0.:
             target_pos = 0.
-        if target_pos > 1.:
+        elif target_pos > 1.:
             target_pos = 1.
-        
+
         # print(f"adjust_move: moving to target_pos {target_pos}")
         self.custom_move(target_pos, speed)
 
@@ -62,11 +62,12 @@ if __name__ == "__main__":
 
     motor = Motor(ID, PORT, BAUDRATE)
     
-    motor.custom_move(0)
+    motor.custom_move(500)
     time.sleep(1)
 
-    motor.custom_move(512)
-    time.sleep(1)
+    # motor.custom_move(512)
+    # time.sleep(1)
 
-    motor.custom_move(1023, 100)
+    motor.custom_move(512, 20)
+    print("moving")
     time.sleep(3)

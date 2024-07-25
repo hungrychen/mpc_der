@@ -2,13 +2,14 @@ import cv2
 import numpy as np
 import os
 import time
+import heapq
 from utils import *
 
 
 def find_node(image: cv2.typing.MatLike,
               color: int,
-              num_nodes: int = 1,
-              debug: bool = False):
+              num_nodes: int,
+              debug: bool = False) -> list[tuple[int, int]]:
     """
     Normally:
     ---
@@ -22,56 +23,29 @@ def find_node(image: cv2.typing.MatLike,
     3. Contour image
     4. Original image overlaid with center
     """
-    tic = time.perf_counter()
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     color_mask = get_mask(hsv_image, color)
 
-    # Code from below:
+    # Consult:
     # https://www.geeksforgeeks.org/python-opencv-find-center-of-contour/
+
     contours, hierarchies = cv2.findContours(
         color_mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
-    if debug:
-        contour_canvas = np.zeros(color_mask.shape[:2], dtype='uint8')
-        cv2.drawContours(contour_canvas, contours, -1, (255, 0, 0), 5)
-
-    overlaid_image = image.copy()
-
-    # TODO: Consider the n longest contours
-    max_contour_len = 0
-    longest_contour = None
+    contour_len_to_idx = []
     for i, c in enumerate(contours):
-        # print(f"{i}, length {len(c)}: {c}")
-        if len(c) >= max_contour_len:
-            max_contour_len = len(c)
-            longest_contour = c
+        heapq.heappush(contour_len_to_idx, (len(c), i))
+    contour_list = contour_len_to_idx[-num_nodes:]
 
-    mom = cv2.moments(longest_contour) # type: ignore
-    center_found = False
-    if mom['m00'] != 0:
-        cx = int(mom['m10']/mom['m00'])
-        cy = int(mom['m01']/mom['m00'])
-        center_found = True
-        if debug:
-            # cv2.drawContours(overlaid_image, [i], -1, (0, 255, 0), 2)
-            cv2.circle(overlaid_image, (cx, cy), 10, (255, 0, 0), -1)
-            # cv2.putText(overlaid_image, "center", (cx - 20, cy - 20),
-            #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
-            # print(f"x: {cx} y: {cy}")
-    else:
-        # This might happen if no node is detected
-        # print("No red detected")
-        pass
+    center_list = []
+    for c_len, c_idx in contour_list:
+        mom = cv2.moments(contours[c_idx])
+        if mom['m00'] != 0:
+            cx = int(mom['m10']/mom['m00'])
+            cy = int(mom['m01']/mom['m00'])
+            center_list.append((cx, cy))
 
-    center = (cx, cy) if center_found else None
-    toc = time.perf_counter()
-    # print(f"find_node: node at {center}, took {toc-tic: 0.4f} s")
-
-    if debug:
-        if center:
-            cv2.circle(overlaid_image, center, 15, (0, 255, 0), -1)
-        return center, color_mask, contour_canvas, overlaid_image
-    return center
+    return center_list
 
 
 def get_mask(hsv_image: cv2.typing.MatLike, color: int):
@@ -115,25 +89,26 @@ def get_mask(hsv_image: cv2.typing.MatLike, color: int):
 
 
 # For testing
-if __name__ == "__main__":
-    input_path = "input/detection_test"
-    output_path = "output/detection_test_result"
-    for dir_entry in os.scandir(input_path):
-        filepath = dir_entry.path
-        img = cv2.imread(filepath)
+# if __name__ == "__main__":
+#     input_path = "input/detection_test"
+#     output_path = "output/detection_test_result"
+#     for dir_entry in os.scandir(input_path):
+#         filepath = dir_entry.path
+#         img = cv2.imread(filepath)
 
-        center, red_mask, contour_canvas, image = find_node(img, GREEN, True) # type: ignore
-        print(f"\"{filepath}\", center is: {center}")
-        output_test_dir_path = os.path.join(
-            output_path, dir_entry.name.split('.')[0])
-        os.makedirs(output_test_dir_path, exist_ok=True)
+#         center, red_mask, contour_canvas, image = find_node(img, GREEN, True) # type: ignore
+#         print(f"\"{filepath}\", center is: {center}")
+#         output_test_dir_path = os.path.join(
+#             output_path, dir_entry.name.split('.')[0])
+#         os.makedirs(output_test_dir_path, exist_ok=True)
 
-        cv2.imwrite(
-            os.path.join(output_test_dir_path, "original_img.jpg"), img)
-        cv2.imwrite(
-            os.path.join(output_test_dir_path, "red_mask.jpg"), red_mask) # type: ignore
-        cv2.imwrite(
-            os.path.join(output_test_dir_path, "countour_canvas.jpg"),
-            contour_canvas)
-        cv2.imwrite(
-            os.path.join(output_test_dir_path, "image.jpg"), image)
+#         cv2.imwrite(
+#             os.path.join(output_test_dir_path, "original_img.jpg"), img)
+#         cv2.imwrite(
+#             os.path.join(output_test_dir_path, "red_mask.jpg"), red_mask) # type: ignore
+#         cv2.imwrite(
+#             os.path.join(output_test_dir_path, "countour_canvas.jpg"),
+#             contour_canvas
+#         )
+#         cv2.imwrite(
+#             os.path.join(output_test_dir_path, "image.jpg"), image)

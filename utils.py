@@ -1,3 +1,6 @@
+import json
+
+
 FRAME_X_MIN = 0
 FRAME_X_MAX = 640
 FRAME_Y_MIN = 0
@@ -14,3 +17,9 @@ YELLOW = 2
 GREEN = 3
 BLUE = 4
 PURPLE = 5
+
+
+def read_config(filepath: str = "config.json"):
+    with open(filepath) as f:
+        config = json.load(f)
+    return config

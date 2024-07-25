@@ -7,23 +7,26 @@ from utils import *
 
 
 def main():
+    num_nodes = read_config()['num_nodes']
+    print(num_nodes)
+
     # define a video capture object
     vid = cv2.VideoCapture(0)
     
     while True: 
         # Capture the video frame by frame 
         ret, frame = vid.read()
-    
+
         # Display the resulting frame
-        red_node = find_node(frame, RED)
-        yellow_node = find_node(frame, YELLOW)
-        green_node = find_node(frame, GREEN)
-        if red_node:
-            cv2.circle(frame, red_node, 5, (0, 0, 255), 5, -1)
-        if yellow_node:
-            cv2.circle(frame, yellow_node, 5, (0, 255, 255), 5, -1)
-        if green_node:
-            cv2.circle(frame, green_node, 5, (0, 255, 0), 5, -1)
+        red_nodes = find_node(frame, RED, num_nodes['red'])
+        yellow_nodes = find_node(frame, YELLOW, num_nodes['yellow'])
+        green_nodes = find_node(frame, GREEN, num_nodes['green'])
+        for node in red_nodes:
+            cv2.circle(frame, node, 5, (0, 0, 255), 5, -1)
+        for node in yellow_nodes:
+            cv2.circle(frame, node, 5, (0, 255, 255), 5, -1)
+        for node in green_nodes:
+            cv2.circle(frame, node, 5, (0, 255, 0), 5, -1)
         cv2.imshow('frame', frame)
 
         # Press 'q' to quit
