@@ -23,3 +23,11 @@ def read_config(filepath: str = "config.json"):
     with open(filepath) as f:
         config = json.load(f)
     return config
+
+
+def clip(num, min, max):
+    if num < min:
+        return min
+    if num > max:
+        return max
+    return num

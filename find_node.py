@@ -35,7 +35,9 @@ def find_node(image: cv2.typing.MatLike,
     contour_len_to_idx = []
     for i, c in enumerate(contours):
         heapq.heappush(contour_len_to_idx, (len(c), i))
-    contour_list = contour_len_to_idx[-num_nodes:]
+    contour_list = []
+    if num_nodes > 0:
+        contour_list = contour_len_to_idx[-num_nodes:]
 
     center_list = []
     for c_len, c_idx in contour_list:
@@ -56,6 +58,9 @@ def get_mask(hsv_image: cv2.typing.MatLike, color: int):
     # Setting saturation and value numbers to accept wider ranges will
     # mean darker colors are also accepted
     # Masking code started with code from ChatGPT
+
+    # The program seems to work best with red, yellow, green
+    # Blue, purple do not work as well as they are dark colors
 
     if color == RED:
         # Define the lower range for red
@@ -82,6 +87,16 @@ def get_mask(hsv_image: cv2.typing.MatLike, color: int):
         upper_green = np.array([80, 255, 255])
 
         color_mask = cv2.inRange(hsv_image, lower_green, upper_green)
+    elif color == BLUE:
+        lower_blue = np.array([105, 45, 45])
+        upper_blue = np.array([130, 255, 255])
+
+        color_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
+    elif color == PURPLE:
+        lower_purple = np.array([130, 45, 45])
+        upper_puple = np.array([150, 255, 255])
+
+        color_mask = cv2.inRange(hsv_image, lower_purple, upper_puple)
     else:
         raise ValueError("Color not available")
     

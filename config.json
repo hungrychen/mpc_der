@@ -1,8 +1,8 @@
 {
     "num_nodes": {
-        "red": 2,
-        "yellow": 2,
-        "green": 1,
+        "red": 4,
+        "yellow": 5,
+        "green": 2,
         "blue": 0,
         "purple": 0
     },

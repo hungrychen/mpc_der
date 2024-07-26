@@ -27,6 +27,10 @@ class Motor:
 
     def __del__(self):
         self.connection.close() # type: ignore
+
+    def get_pos(self):
+        """Get the normalized position"""
+        return self.connection.get_present_position(self.id) / MOTOR_MAX_POS
         
     def custom_move(self, target_pos, speed=None):
         """
@@ -45,10 +49,7 @@ class Motor:
         curr_pos = (self.connection.get_present_position(self.id)
                     / float(MOTOR_MAX_POS))
         target_pos = curr_pos + adjustment
-        if target_pos < 0.:
-            target_pos = 0.
-        elif target_pos > 1.:
-            target_pos = 1.
+        target_pos = clip(target_pos, 0., 1.)
 
         # print(f"adjust_move: moving to target_pos {target_pos}")
         self.custom_move(target_pos, speed)

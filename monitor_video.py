@@ -21,12 +21,18 @@ def main():
         red_nodes = find_node(frame, RED, num_nodes['red'])
         yellow_nodes = find_node(frame, YELLOW, num_nodes['yellow'])
         green_nodes = find_node(frame, GREEN, num_nodes['green'])
+        blue_nodes = find_node(frame, BLUE, num_nodes['blue'])
+        purple_nodes = find_node(frame, PURPLE, num_nodes['purple'])
         for node in red_nodes:
-            cv2.circle(frame, node, 5, (0, 0, 255), 5, -1)
+            cv2.circle(frame, node, 5, (0, 0, 255), 2, -1)
         for node in yellow_nodes:
-            cv2.circle(frame, node, 5, (0, 255, 255), 5, -1)
+            cv2.circle(frame, node, 5, (0, 255, 255), 2, -1)
         for node in green_nodes:
-            cv2.circle(frame, node, 5, (0, 255, 0), 5, -1)
+            cv2.circle(frame, node, 5, (0, 255, 0), 2, -1)
+        for node in blue_nodes:
+            cv2.circle(frame, node, 5, (255, 0, 0), 2, -1)
+        for node in purple_nodes:
+            cv2.circle(frame, node, 5, (255, 0, 255), 2, -1)
         cv2.imshow('frame', frame)
 
         # Press 'q' to quit
