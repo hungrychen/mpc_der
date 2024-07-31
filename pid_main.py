@@ -26,11 +26,7 @@ def main():
     sel = selectors.DefaultSelector()
     sel.register(sys.stdin, selectors.EVENT_READ)
     
-    motor.custom_move(INIT_POS)
-    while True:
-        pos = motor.get_pos()
-        if pos > INIT_POS-.05 and pos < INIT_POS+.05:
-            break
+    motor.custom_move(INIT_POS, block=True)
     pid_controller = simple_pid.PID(K_P, K_I, K_D, setpoint=INIT_POS)
 
     show_video = config["show_video"]
@@ -56,13 +52,15 @@ def main():
             else:
                 pid_controller.reset()
                 pid_controller.setpoint = clip(num, 0., 1.)
-        
+
         ret, frame = vid.read()
         node_center_list = find_node(frame, RED, 1)
         node_center = None
 
         if node_center_list:
             node_center = node_center_list[0]
+            # print(node_center, end=" ")
+
             cx, cy = node_center
             norm_cy = cy / FRAME_Y_MAX
             prev_node_center = node_center
@@ -76,8 +74,8 @@ def main():
                 control = EDGE_CORRECTION_CTRL
             pid_controller.reset()
 
-        # print(f"{norm_cy: 0.4f}, {control: 0.4f}")
         motor.adjust_move(control)
+        # print(control)
 
         if show_video:
             if node_center is not None:

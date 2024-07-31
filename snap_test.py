@@ -27,8 +27,8 @@ def main():
     motors[0].wait_for_pos(WAITING_TOL)
     motors[1].wait_for_pos(WAITING_TOL)
 
-    motors[0].custom_move(.25, speed=2)
-    motors[1].custom_move(.75, speed=2)
+    motors[0].custom_move(.25, speed=3)
+    motors[1].custom_move(.75, speed=3)
     
     # motors[0].wait_for_pos(WAITING_TOL)
     # motors[1].wait_for_pos(WAITING_TOL)
