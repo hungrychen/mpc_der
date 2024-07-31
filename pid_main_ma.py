@@ -21,7 +21,14 @@ INIT_POS = (0.5, 0.5)
 K_P = .06
 K_I = .004
 K_D = .02
+
+# Autotuned
+# K_P = 0.02061
+# K_I = 0.003472
+# K_D = 0.0
 OUTPUT_LIMITS = (-0.3, 0.3)
+
+# LPF_ALPHA = 0.07
 
 EDGE_CORRECTION_CTRL = .003
 
@@ -29,7 +36,7 @@ EDGE_CORRECTION_CTRL = .003
 # MA_WINDOW = 15
 
 # PTP tuning
-MA_WINDOW = 10
+MA_WINDOW = 12
 
 def main():
     config = read_config()
@@ -43,8 +50,9 @@ def main():
     sel.register(sys.stdin, selectors.EVENT_READ)
     
     motor.custom_move(INIT_POS[1], block=True)
+    # time.sleep(2)
     pid_controller = simple_pid.PID(K_P, K_I, K_D, setpoint=INIT_POS[1],
-                                    output_limits=OUTPUT_LIMITS)
+                                    output_limits=OUTPUT_LIMITS,)
 
     show_video = config["show_video"]
     if show_video:
@@ -54,10 +62,20 @@ def main():
     else:
         print("Modify config.json to show video", file=sys.stderr)
 
+    node_center_list = None
+    while not node_center_list:
+        node_center_list = find_node(frame, RED, 1)
+        print("Place node in camera frame")
+    # cx, cy = node_center_list[0]
+    node_center = node_center_list[0]
+
     node_center_hist = np.empty((MA_WINDOW, 2))
-    node_center_hist[:,0] = INIT_POS[0] * FRAME_X_MAX
-    node_center_hist[:,1] = INIT_POS[1] * FRAME_Y_MAX
-    prev_node_center = None
+    node_center_hist[:,:] = node_center
+    print(node_center_hist)
+    # node_center_hist[:,0] = INIT_POS[0] * FRAME_X_MAX
+    # node_center_hist[:,1] = INIT_POS[1] * FRAME_Y_MAX
+
+    ctrl_pos = np.array(node_center)
 
     time_start = time.monotonic()
     f = open("output/pid_ptp/data.txt", "w")
@@ -103,10 +121,11 @@ def main():
         #     pid_controller.reset()
         
         # mean_pos = np.mean(node_center_hist, axis=0)
-        mean_pos = np.min(node_center_hist, axis=0) + np.ptp(node_center_hist, axis=0)/2
+        ctrl_pos = np.min(node_center_hist, axis=0) + np.ptp(node_center_hist, axis=0)/2
+        # ctrl_pos = LPF_ALPHA * node_center_hist[-1,:] + (1-LPF_ALPHA) * ctrl_pos
 
         if node_center_list:
-            norm_mean_cy = mean_pos[1] / FRAME_Y_MAX
+            norm_mean_cy = ctrl_pos[1] / FRAME_Y_MAX
             control = pid_controller(norm_mean_cy)
         else:
             cx, cy = node_center_hist[-1,:]
@@ -118,13 +137,13 @@ def main():
             pid_controller.reset()
 
         motor.adjust_move(control)
-        print(f"{time.monotonic()-time_start: 0.4f},{control: 0.4f},{mean_pos[0]: 0.1f},{mean_pos[1]: 0.1f}", file=f)
+        print(f"{time.monotonic()-time_start: 0.4f},{control: 0.4f},{ctrl_pos[0]: 0.1f},{ctrl_pos[1]: 0.1f}", file=f)
         # print(control)
 
         if show_video:
             if node_center is not None:
                 cv2.circle(frame, node_center, 5, (0, 0, 255), 2, -1)
-            cv2.circle(frame, mean_pos.astype(int), 2, (255, 0, 0), 1, -1)
+            cv2.circle(frame, ctrl_pos.astype(int), 2, (255, 0, 0), 1, -1)
             setpoint = pid_controller.setpoint
             setpoint_y_coord = int(setpoint*FRAME_Y_MAX)
             cv2.putText(frame, f"SETPOINT: {setpoint}",
