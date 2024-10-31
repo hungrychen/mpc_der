@@ -17,6 +17,9 @@ YELLOW = 2
 GREEN = 3
 BLUE = 4
 PURPLE = 5
+BROWN = 6
+BLACK = 7
+PINK = 8
 
 
 def read_config(filepath: str = "config.json"):

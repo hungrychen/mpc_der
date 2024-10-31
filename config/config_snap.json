@@ -9,7 +9,7 @@
     "baudrate": 1000000,
     "port": "/dev/ttyUSB0",
     "motor_ids": [1, 2],
-    "motor_speeds": [20, 20],
+    "motor_speeds": [100, 100],
     "position_log": true,
     "show_video": true
 }

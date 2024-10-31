@@ -55,8 +55,11 @@ def main():
                                     output_limits=OUTPUT_LIMITS,)
 
     show_video = config["show_video"]
-    if show_video:
+    ret = None
+    while not ret:
         ret, frame = vid.read()
+        print("Check video", file=sys.stderr)
+    if show_video:
         cv2.imshow('frame', frame)
         cv2.waitKey(1)
     else:
@@ -143,7 +146,7 @@ def main():
         if show_video:
             if node_center is not None:
                 cv2.circle(frame, node_center, 5, (0, 0, 255), 2, -1)
-            cv2.circle(frame, ctrl_pos.astype(int), 2, (255, 0, 0), 1, -1)
+            cv2.circle(frame, ctrl_pos.astype(int), 3, (255, 0, 0), 2, -1)
             setpoint = pid_controller.setpoint
             setpoint_y_coord = int(setpoint*FRAME_Y_MAX)
             cv2.putText(frame, f"SETPOINT: {setpoint}",

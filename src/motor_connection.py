@@ -33,9 +33,12 @@ class Motor:
                 time.sleep(1)
 
     def __del__(self):
+        self.stop()
+        self.connection.close() # type: ignore
+
+    def stop(self):
         self.connection.goto(
             self.id, self.connection.get_present_position(self.id))
-        self.connection.close() # type: ignore
 
     def get_connection(self):
         """
@@ -80,7 +83,7 @@ class Motor:
         """
         self.connection.goto(self.id, int(target_pos * MOTOR_MAX_POS), # type: ignore
                              self.def_speed if speed is None else speed)
-        print("Wrote move")
+        # print("Wrote move")
         if block:
             self.wait_for_pos(block_tolerance)
 

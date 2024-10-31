@@ -1,15 +1,12 @@
 import cv2
 import numpy as np
-import os
-import time
 import heapq
 from utils import *
 
 
-def find_node(image: cv2.typing.MatLike,
-              color: int,
-              num_nodes: int,
-              debug: bool = False) -> list[tuple[int, int]]:
+def find_node(
+    image: cv2.typing.MatLike, color: int, num_nodes: int, debug: bool = False
+) -> list[tuple[int, int]]:
     """
     Normally:
     ---
@@ -30,7 +27,8 @@ def find_node(image: cv2.typing.MatLike,
     # https://www.geeksforgeeks.org/python-opencv-find-center-of-contour/
 
     contours, hierarchies = cv2.findContours(
-        color_mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        color_mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
+    )
 
     contour_len_to_idx = []
     for i, c in enumerate(contours):
@@ -42,9 +40,9 @@ def find_node(image: cv2.typing.MatLike,
     center_list = []
     for c_len, c_idx in contour_list:
         mom = cv2.moments(contours[c_idx])
-        if mom['m00'] != 0:
-            cx = int(mom['m10']/mom['m00'])
-            cy = int(mom['m01']/mom['m00'])
+        if mom["m00"] != 0:
+            cx = int(mom["m10"] / mom["m00"])
+            cy = int(mom["m01"] / mom["m00"])
             center_list.append((cx, cy))
 
     return center_list
@@ -97,9 +95,25 @@ def get_mask(hsv_image: cv2.typing.MatLike, color: int):
         upper_puple = np.array([150, 255, 255])
 
         color_mask = cv2.inRange(hsv_image, lower_purple, upper_puple)
+    elif color == PINK:
+        # Define the lower range for red
+        lower_red1 = np.array([0, 20, 55])
+        upper_red1 = np.array([10, 255, 255])
+
+        # Define the upper range for red
+        lower_red2 = np.array([170, 20, 55])
+        upper_red2 = np.array([180, 255, 255])
+
+        # Create masks for both ranges
+        mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
+        mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
+
+        # Combine the masks
+        color_mask = cv2.bitwise_or(mask1, mask2)
+
     else:
         raise ValueError("Color not available")
-    
+
     return color_mask
 
 

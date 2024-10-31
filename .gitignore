@@ -1,6 +1,5 @@
-*.jpg
-data.txt
-.vscode/
+input/
+output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

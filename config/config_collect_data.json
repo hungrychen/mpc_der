@@ -1,0 +1,16 @@
+{
+    "num_nodes": {
+        "red": 0,
+        "yellow": 0,
+        "green": 1,
+        "blue": 1,
+        "pink": 0,
+        "purple": 1
+    },
+    "baudrate": 1000000,
+    "port": "/dev/ttyUSB0",
+    "motor_ids": [1],
+    "motor_speeds": [20],
+    "position_log": true,
+    "show_video": true
+}
