@@ -9,7 +9,7 @@ from utils import *
 
 def main():
     start_time = time.monotonic()
-    num_nodes = read_config("config_collect_data.json")['num_nodes']
+    num_nodes = read_config("./config/config_collect_data.json")['num_nodes']
     print(num_nodes)
 
     # define a video capture object

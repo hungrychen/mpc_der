@@ -12,7 +12,7 @@ WAITING_TOL = 0.005
 
 def main():
     start_time = time.monotonic()
-    config = read_config("wave.json")
+    config = read_config("./config/wave.json")
     print(f"Read in the config: {config}")
 
     motor_ids = config["motor_ids"]

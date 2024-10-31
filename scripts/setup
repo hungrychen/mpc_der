@@ -1,0 +1,10 @@
+#!/bin/bash
+
+pipenv install
+if [ $? -ne 0 ]; then
+    echo "You may need to install pipenv, or check that the correct Python version is available"
+    exit 1
+fi
+
+mkdir input
+mkdir output
