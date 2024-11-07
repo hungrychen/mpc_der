@@ -1,6 +1,20 @@
 # mpc_der
 
+## Requirements
+- Python 3.12
+- Pipenv
+
+You can install Pipenv with `pip3 install Pipenv --user`.
+
 ## Scripts
 Run the scripts from the workspace root.
 
-Run the setup script first with `./scripts/setup`.
+Once Pipenv is installed, run the setup script first with `./scripts/setup`.
+
+## Running the Program
+To collect data, run:
+```shell
+python ./src/collect_video_data.py
+```
+
+Output files will appear in: `./output/collect_video_data/`

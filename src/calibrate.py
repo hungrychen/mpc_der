@@ -10,7 +10,7 @@ For auto calibration:
 import cv2
 import numpy as np
 from numpy.linalg import norm
-from sys import stderr, argv
+from sys import stderr
 import argparse
 from utils import *
 from find_node import find_node
@@ -44,6 +44,7 @@ def get_coord(event, x, y, flags, userdata):
             coord = None
             dist_count += 1
             if dist_count == num_dist:
+                vid.release()
                 cv2.destroyAllWindows()
                 exit(0)
 
@@ -71,6 +72,7 @@ if auto_cal:
             dist = norm(np.array(cal_nodes[0]) - np.array(cal_nodes[1]))
             print(f"dist: {dist} px", file=stderr)
             print(dist)
+            vid.release()
             cv2.destroyAllWindows()
             exit(0)
 else:
@@ -81,5 +83,6 @@ else:
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
+vid.release()
 cv2.destroyAllWindows()
 exit(1)

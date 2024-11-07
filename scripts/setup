@@ -8,3 +8,4 @@ fi
 
 mkdir input
 mkdir output
+mkdir output/collect_video_data

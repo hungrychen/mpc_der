@@ -4,6 +4,23 @@ import heapq
 from utils import *
 
 
+# def find_nodes(
+#     image: cv2.typing.MatLike, num_search: dict[int, int], n_nodes: int
+# ) -> np.ndarray:
+#     """
+#     The value (-1, -1) indicates that a node was not found.
+#     Returns the positions as a Numpy array of the form
+#     [x_1, y_1, x_2, y_2, ..., x_n, y_n], with the colors in the order
+#     they were entered
+#     """
+#     arr = np.empty((1, 2*n_nodes))
+
+#     for color in num_search:
+#         pass
+
+#     return arr
+
+
 def find_node(
     image: cv2.typing.MatLike, color: int, num_nodes: int
 ) -> list[tuple[int, int]]:
@@ -11,6 +28,8 @@ def find_node(
     Return the a tuple containing the center of the colored node in the
     image.
     """
+    if num_nodes <= 0:
+        return []
 
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     color_mask = get_mask(hsv_image, color)
@@ -19,25 +38,36 @@ def find_node(
     # https://www.geeksforgeeks.org/python-opencv-find-center-of-contour/
 
     contours, hierarchies = cv2.findContours(
-        color_mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
+        color_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
     )
 
     contour_len_to_idx = []
     for i, c in enumerate(contours):
         heapq.heappush(contour_len_to_idx, (len(c), i))
-    contour_list = []
-    if num_nodes > 0:
-        contour_list = contour_len_to_idx[-num_nodes:]
 
     center_list = []
-    for c_len, c_idx in contour_list:
+    for c_len, c_idx in contour_len_to_idx:
         mom = cv2.moments(contours[c_idx])
         if mom["m00"] != 0:
             cx = int(mom["m10"] / mom["m00"])
             cy = int(mom["m01"] / mom["m00"])
-            center_list.append((cx, cy))
+            point = (cx, cy)
+            if not exists_point_within_dist(
+                point, center_list, MIN_NODE_SEPARATION
+            ):
+                center_list.append(point)
+                if len(center_list) == num_nodes:
+                    break
 
     return center_list
+
+
+def exists_point_within_dist(test_point, collection_of_points, dist):
+    test_point_t = np.array(test_point)
+    for collection_point in collection_of_points:
+        if np.linalg.norm(test_point_t - np.array(collection_point)) < dist:
+            return True
+    return False
 
 
 def get_mask(hsv_image: cv2.typing.MatLike, color: int):
@@ -83,7 +113,7 @@ def get_mask(hsv_image: cv2.typing.MatLike, color: int):
 
         color_mask = cv2.inRange(hsv_image, lower_green, upper_green)
     elif color == BLUE:
-        lower_blue = np.array([105, 55, 55])
+        lower_blue = np.array([105, 45, 45])
         upper_blue = np.array([115, 255, 255])
 
         color_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
