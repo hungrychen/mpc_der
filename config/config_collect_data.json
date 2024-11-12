@@ -2,7 +2,7 @@
     "num_nodes": {
         "red": 0,
         "yellow": 0,
-        "orange": 8,
+        "orange": 6,
         "green": 0,
         "blue": 0,
         "pink": 0,
@@ -13,8 +13,9 @@
     "port": "/dev/ttyUSB0",
     "motor_ids": [1],
     "motor_speeds": [20],
-    "position_log": true,
     "show_video": true,
     "data_interval": 0.01,
-    "duration": 10.0
+    "duration": 10.0,
+    "calibration_distance": 0.1,
+    "node_offset_distance": 0.4
 }

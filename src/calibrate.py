@@ -62,7 +62,7 @@ if auto_cal:
         )
     for node in cal_nodes:
         cv2.circle(frame, node, 5, COLOR_MAP[args.node_color_code], 2, -1)
-    print("Press 'c' to confirm calibration, or 'q' to quit", file=stderr)
+    print("Press 'c' to confirm calibration, or 'q' to recalibrate", file=stderr)
     while True:
         cv2.imshow(WINNAME, frame)
         key = cv2.waitKey(1) & 0xFF
@@ -70,7 +70,7 @@ if auto_cal:
             break
         elif key == ord("c"):
             dist = norm(np.array(cal_nodes[0]) - np.array(cal_nodes[1]))
-            print(f"dist: {dist} px", file=stderr)
+            print(f"dist={dist} px", file=stderr)
             print(dist)
             vid.release()
             cv2.destroyAllWindows()

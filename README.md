@@ -16,5 +16,6 @@ To collect data, run:
 ```shell
 python ./src/collect_video_data.py
 ```
+This will read configuration information from `./config/config_collect_data.json`.
 
 Output files will appear in: `./output/collect_video_data/`
