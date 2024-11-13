@@ -103,7 +103,7 @@ def get_mask(hsv_image: cv2.typing.MatLike, color: int):
 
         color_mask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
     elif color == ORANGE:
-        lower_orange = np.array([10, 55, 55])
+        lower_orange = np.array([10, 75, 75])
         upper_orange = np.array([30, 255, 255])
 
         color_mask = cv2.inRange(hsv_image, lower_orange, upper_orange)

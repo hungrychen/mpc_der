@@ -83,4 +83,4 @@ def calibrate(auto_cal, node_color_code, n_pairs=None):
 
     vid.release()
     cv2.destroyAllWindows()
-    return output, exit_stat == 0
+    return exit_stat == 0, output

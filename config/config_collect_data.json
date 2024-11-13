@@ -15,7 +15,7 @@
     "motor_speeds": [20],
     "show_video": true,
     "data_interval": 0.01,
-    "duration": 3.0,
+    "duration": 200.0,
     "calibration_distance": 0.1,
     "node_offset_distance": 0.4
 }

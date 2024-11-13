@@ -1,5 +1,3 @@
-import subprocess
-import sys
 from get_top_node import get_top_node
 from collect_video_data import collect_video_data
 from calibrate import calibrate
@@ -17,7 +15,7 @@ def main():
 
     calibrate_success = False
     while not calibrate_success:
-        cal_dist_px, calibrate_success = calibrate(True, DEF_CALIBRATION_COLOR)
+        calibrate_success, cal_dist_px = calibrate(True, DEF_CALIBRATION_COLOR)
     m_per_px = calibration_dist / cal_dist_px
     print(f"cm_per_px={m_per_px}")
 
@@ -29,7 +27,7 @@ def main():
     print(f"origin_px={origin_px}")
 
     print("\n***Running data collection***")
-    video_data, video_raw_data = collect_video_data(config, origin_px, m_per_px)
+    collect_video_data(config, origin_px, m_per_px)
 
 
 if __name__ == "__main__":
