@@ -5,8 +5,7 @@ from find_node import find_node
 from utils import *
 
 
-def collect_video_data(origin_px, m_per_px):
-    config = read_config("./config/config_collect_data.json")
+def collect_video_data(config, origin_px, m_per_px):
     data_interval = config["data_interval"]
     num_nodes = config["num_nodes"]
     duration = config["duration"]
@@ -87,4 +86,5 @@ def collect_video_data(origin_px, m_per_px):
 
 
 if __name__ == "__main__":
-    collect_video_data((0, 0), 1)
+    config = read_config("./config/config_collect_data.json")
+    collect_video_data(config, (0, 0), 1)

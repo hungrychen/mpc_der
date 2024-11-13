@@ -3,9 +3,7 @@ from find_node import find_node
 from utils import *
 
 
-def get_top_node(config_file: str):
-    config = read_config(config_file)
-
+def get_top_node(config):
     vid = cv2.VideoCapture(0)
     vid.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_Y_MAX)
     vid.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_X_MAX)
