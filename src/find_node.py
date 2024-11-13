@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import heapq
 from utils import *
 
 
@@ -38,12 +37,17 @@ def find_node(
     # https://www.geeksforgeeks.org/python-opencv-find-center-of-contour/
 
     contours, hierarchies = cv2.findContours(
-        color_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        color_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
     )
 
     contour_len_to_idx = []
     for i, c in enumerate(contours):
-        heapq.heappush(contour_len_to_idx, (len(c), i))
+        contour_len_to_idx.append((len(c), i))
+    contour_len_to_idx.sort(
+        key=lambda item: item[0],
+        reverse=True,
+    )
+    # print(f"contour_len_to_idx={contour_len_to_idx}")
 
     center_list = []
     for c_len, c_idx in contour_len_to_idx:

@@ -20,8 +20,8 @@ def collect_video_data(config, origin_px, m_per_px, save_files=True):
 
     data_r = int((DATA_BUFFER_EXTRA_SCALE * duration) / data_interval)
     data_c = 1 + num_nodes[DEF_EXPERIMENT_COLOR_STR] * 2
-    data = np.full((data_r, data_c), NO_NODES)
-    data_raw = np.full_like(data, NO_NODES)
+    data = np.full((data_r, data_c), NO_NODE)
+    data_raw = np.full_like(data, NO_NODE)
 
     start_time = time.monotonic()
     prev_time = start_time
@@ -53,7 +53,7 @@ def collect_video_data(config, origin_px, m_per_px, save_files=True):
                 data_raw[it, 2+i*2] = node[1]
                 data[it, 1+i*2] = (node[0] - origin_px[0]) * m_per_px
                 data[it, 2+i*2] = -(node[1] - origin_px[1]) * m_per_px
-            print(*[f"{d:.5f}" for d in data[it, :]])
+            print(f"n={len(orange_nodes)}, ", *[f"{d:.5f}" for d in data[it, :]])
 
             if show_video:
                 for node in orange_nodes:
