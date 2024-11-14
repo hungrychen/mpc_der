@@ -39,8 +39,13 @@ def collect_video_data(config, origin_px, m_per_px, save_files=True):
                 )
                 break
 
+            exit_flag = False
             while True:
                 ret, frame = vid.read()
+                if not ret:
+                    exit_flag = True
+                    print("Check camera connection", file=sys.stderr)
+                    break
                 exp_nodes = find_node(
                     frame,
                     DEF_EXPERIMENT_COLOR,
@@ -56,6 +61,9 @@ def collect_video_data(config, origin_px, m_per_px, save_files=True):
                     file=sys.stderr,
                 )
                 curr_time = time.monotonic()
+            if exit_flag:
+                success = False
+                break
 
             freq = 1 / (curr_time - prev_time)
             prev_time = curr_time
@@ -74,29 +82,15 @@ def collect_video_data(config, origin_px, m_per_px, save_files=True):
                 data[it, 1 + i * 2] = (node[0] - origin_px[0]) * m_per_px
                 data[it, 2 + i * 2] = -(node[1] - origin_px[1]) * m_per_px
             print(f"n={len(exp_nodes)}: ", *[f"{d:.5f}" for d in data[it, :]])
+            it += 1
 
             # Ref for showing text:
             # https://www.geeksforgeeks.org/python-opencv-cv2-puttext-method/
             if show_video:
-                for node in exp_nodes:
-                    cv2.circle(
-                        frame, node, 5, COLOR_MAP[DEF_EXPERIMENT_COLOR], 2, -1
-                    )
-                draw_node_connections(origin_px, exp_nodes, frame)
-                cv2.putText(
-                    frame,
-                    f"Freq: {freq:.2f} Hz",
-                    (30, 30),
-                    cv2.FONT_HERSHEY_PLAIN,
-                    1.5,
-                    BGR_BLACK,
-                )
-                cv2.imshow(WINNAME, frame)
+                create_display(origin_px, frame, exp_nodes, freq)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     success = False
                     break
-
-            it += 1
 
     data = data[:it, :]
     data_raw = data_raw[:it, :]
@@ -104,6 +98,21 @@ def collect_video_data(config, origin_px, m_per_px, save_files=True):
         write_files(data, data_raw)
 
     return success, data, data_raw
+
+
+def create_display(origin_px, frame, exp_nodes, freq):
+    for node in exp_nodes:
+        cv2.circle(frame, node, 5, COLOR_MAP[DEF_EXPERIMENT_COLOR], 2, -1)
+    draw_node_connections(origin_px, exp_nodes, frame)
+    cv2.putText(
+        frame,
+        f"Freq: {freq:.2f} Hz",
+        (30, 30),
+        cv2.FONT_HERSHEY_PLAIN,
+        1.5,
+        BGR_BLACK,
+    )
+    cv2.imshow(WINNAME, frame)
 
 
 def write_files(data, data_raw):

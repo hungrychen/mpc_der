@@ -19,7 +19,7 @@ def main():
     m_per_px = calibration_dist / cal_dist_px
     print(f"cm_per_px={m_per_px}")
 
-    print("\n***Running offset calibration")
+    print("\n***Running offset calibration***")
     top_node_success = False
     while not top_node_success:
         top_node_success, top_node = get_top_node(config)
