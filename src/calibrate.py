@@ -45,12 +45,19 @@ def calibrate(auto_cal, node_color_code, n_pairs=None):
         ret, frame = vid.read()
         cal_nodes = find_node(frame, node_color_code, CALIBRATION_NUM_NODES)
         if len(cal_nodes) != CALIBRATION_NUM_NODES:
-            raise RuntimeError(
-                f"Cannot detect indicated number of nodes {CALIBRATION_NUM_NODES}"
+            print(
+                "Cannot detect indicated number of nodes:",
+                CALIBRATION_NUM_NODES,
+                file=stderr,
             )
+            exit_stat = 1
+            return exit_stat == 0, output
         for node in cal_nodes:
             cv2.circle(frame, node, 5, COLOR_MAP[node_color_code], 2, -1)
-        print("Press 'c' to confirm calibration, or 'q' to recalibrate", file=stderr)
+        print(
+            "Press 'c' to confirm calibration, or 'q' to recalibrate",
+            file=stderr,
+        )
         while True:
             cv2.imshow(WINNAME, frame)
             key = cv2.waitKey(1) & 0xFF

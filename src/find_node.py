@@ -24,8 +24,8 @@ def find_node(
     image: cv2.typing.MatLike, color: int, num_nodes: int
 ) -> list[tuple[int, int]]:
     """
-    Return the a tuple containing the center of the colored node in the
-    image.
+    Return a list of tuples containing the centers of the colored nodes
+    in the image.
     """
     if num_nodes <= 0:
         return []
