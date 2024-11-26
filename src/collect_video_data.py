@@ -2,11 +2,17 @@ import cv2
 import time
 import sys
 import numpy as np
+from pyax12 import connection
 from find_node import find_node
 from utils import *
 
 
-def collect_video_data(config, origin_px, m_per_px, save_files=True):
+def collect_video_data(config,
+                       origin_px,
+                       m_per_px,
+                       *,
+                       save_files=True,
+                       use_motor=False):
     success = True
     data_interval = config["data_interval"]
     if data_interval <= MIN_DATA_INTERVAL:
@@ -21,16 +27,38 @@ def collect_video_data(config, origin_px, m_per_px, save_files=True):
     vid.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_Y_MAX)
     vid.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_X_MAX)
 
+    if use_motor:
+        motor_id = config["motor_ids"][0]
+        motor_move_interval = config["motor_move_interval"]
+        motor_speed = config["motor_speeds"][0]
+        motor_right_lim = config["motor_right_lim"]
+        motor_left_lim = config["motor_left_lim"]
+        motor = connection.Connection(config["port"], config["baudrate"])
+        if not motor.ping(motor_id):
+            print("Motor connection problem", file=sys.stderr)
+            return False, None, None
+
     data_r = int((DATA_BUFFER_EXTRA_SCALE * duration) / data_interval)
-    data_c = 1 + num_nodes[DEF_EXPERIMENT_COLOR_STR] * 2
+    data_c = 2 + num_nodes[DEF_EXPERIMENT_COLOR_STR] * 2
     data = np.full((data_r, data_c), NO_NODE)
     data_raw = np.full_like(data, NO_NODE)
 
     start_time = time.monotonic()
     prev_time = start_time
+    prev_motor_move_time = start_time
+    motor_direction = True
     it = 0
     while True:
         curr_time = time.monotonic()
+        if (use_motor
+                and curr_time - prev_motor_move_time >= motor_move_interval):
+            prev_motor_move_time = curr_time
+            motor_direction = not motor_direction
+            motor.goto(
+                motor_id,
+                motor_right_lim if motor_direction else motor_left_lim,
+                motor_speed
+            )
         if curr_time - prev_time >= data_interval:
             if it >= data_r:
                 print(
@@ -81,6 +109,8 @@ def collect_video_data(config, origin_px, m_per_px, save_files=True):
                 data_raw[it, 2 + i * 2] = node[1]
                 data[it, 1 + i * 2] = (node[0] - origin_px[0]) * m_per_px
                 data[it, 2 + i * 2] = -(node[1] - origin_px[1]) * m_per_px
+                if use_motor:
+                    data[it, -1] = motor.get_present_speed(motor_id)
             print(f"n={len(exp_nodes)}: ", *[f"{d:.5f}" for d in data[it, :]])
             it += 1
 
@@ -159,7 +189,7 @@ def draw_node_connections(origin_px, nodes_px, frame):
 
 if __name__ == "__main__":
     config = read_config("./config/config_collect_data.json")
-    collect_video_data(config, (415, -10), 1, False)
+    collect_video_data(config, (415, -10), 1, save_files=False, use_motor=True)
 
     # nodes = [(404, 243), (400, 405), (398, 352), (407, 459), (401, 303), (406, 520)]
     # center = (404, np.float64(-122.02197735851058))

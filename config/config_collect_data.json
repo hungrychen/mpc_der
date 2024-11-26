@@ -12,11 +12,14 @@
     "baudrate": 1000000,
     "port": "/dev/ttyUSB0",
     "motor_ids": [1],
-    "motor_speeds": [20],
+    "motor_speeds": [128],
     "show_video": true,
     "data_interval": 0.0,
     "duration": 15.0,
     "calibration_distance": 0.1,
     "node_offset_distance": 0.4,
-    "reject_incomplete_node_set": true
+    "reject_incomplete_node_set": true,
+    "motor_move_interval": 3.0,
+    "motor_right_lim": 206,
+    "motor_left_lim": 818
 }

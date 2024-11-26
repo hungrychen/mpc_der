@@ -8,6 +8,7 @@ numpy = "*"
 opencv-python = "*"
 pyrealsense2 = "*"
 matplotlib = "*"
+pyax12 = "*"
 
 [dev-packages]
 

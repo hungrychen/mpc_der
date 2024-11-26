@@ -27,7 +27,7 @@ def main():
     print(f"origin_px={origin_px}")
 
     print("\n***Running data collection***")
-    collect_video_data(config, origin_px, m_per_px)
+    collect_video_data(config, origin_px, m_per_px, use_motor=True)
 
 
 if __name__ == "__main__":

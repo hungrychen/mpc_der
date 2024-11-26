@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "299af54a4f18bd6cce38635d0cd64761955fc77247b7e091a54daee6e1c0378b"
+            "sha256": "6af6c49434ca29097575b9854bde2ee4ab742364a0db1a52e7e608a329448aa4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -473,6 +473,13 @@
             "markers": "python_version >= '3.9'",
             "version": "==11.0.0"
         },
+        "pyax12": {
+            "hashes": [
+                "sha256:b2181fcfc3dda78aeda221ae8fb9a50c40e91dc812e6b46ce772496bd6f0e06b"
+            ],
+            "index": "pypi",
+            "version": "==0.5.dev3"
+        },
         "pyparsing": {
             "hashes": [
                 "sha256:93d9577b88da0bbea8cc8334ee8b918ed014968fd2ec383e868fb8afb1ccef84",
@@ -500,6 +507,13 @@
             ],
             "index": "pypi",
             "version": "==2.55.1.6486"
+        },
+        "pyserial": {
+            "hashes": [
+                "sha256:3c77e014170dfffbd816e6ffc205e9842efb10be9f58ec16d3e8675b4925cddb",
+                "sha256:c4451db6ba391ca6ca299fb3ec7bae67a5c55dde170964c7a14ceefec02f2cf0"
+            ],
+            "version": "==3.5"
         },
         "python-dateutil": {
             "hashes": [
