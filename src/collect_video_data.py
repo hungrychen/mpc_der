@@ -14,7 +14,7 @@ def collect_video_data(config,
                        file_timestamp,
                        *,
                        save_files=True,
-                       use_motor=False):
+                       use_motor: connection.Connection | None = None):
     # """
     # Upon return, working directory will be changed to location files are
     # being saved to, if `save_files` is set to `True`.
@@ -34,17 +34,12 @@ def collect_video_data(config,
     vid.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_X_MAX)
 
     if use_motor:
+        motor = use_motor
         motor_id = config["motor_ids"][0]
         motor_move_interval = config["motor_move_interval"]
         motor_speed = config["motor_speeds"][0]
         motor_right_lim = config["motor_right_lim"]
         motor_left_lim = config["motor_left_lim"]
-        motor = connection.Connection(config["port"], config["baudrate"],
-                                      waiting_time=MOTOR_WAITING_TIME,
-                                      timeout=MOTOR_TIMEOUT_TIME)
-        if not motor.ping(motor_id):
-            print("Motor connection problem", file=sys.stderr)
-            return False, None, None
 
     data_r = int((DATA_BUFFER_EXTRA_SCALE * duration) / data_interval)
     data_c = 2 + num_nodes[DEF_EXPERIMENT_COLOR_STR] * 2
@@ -93,7 +88,7 @@ def collect_video_data(config,
                 if not rej_inc_node_set or valid_node_list:
                     break
                 print(
-                    "Incomplete node set detected, recapturing frame",
+                    "*** Incomplete node set detected, recapturing frame ***",
                     file=sys.stderr,
                 )
                 curr_time = time.monotonic()

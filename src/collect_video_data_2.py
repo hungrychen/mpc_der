@@ -1,6 +1,8 @@
 import time
 import os
+import sys
 import numpy as np
+from pyax12 import connection
 from get_top_node import get_top_node
 from collect_video_data import collect_video_data
 from calibrate import calibrate
@@ -16,6 +18,19 @@ def main():
     file_timestamp = f"{time.time():.0f}"
     os.chdir("./output/collect_video_data")
     os.mkdir(file_timestamp)
+
+
+    motor = connection.Connection(
+        config["port"], config["baudrate"],
+        waiting_time=MOTOR_WAITING_TIME,
+        timeout=MOTOR_TIMEOUT_TIME
+    )
+    motor_id = config["motor_ids"][0]
+    if not motor.ping(motor_id):
+        print("Motor connection problem", file=sys.stderr)
+        return False
+    motor.goto(motor_id, 512, 256)
+    time.sleep(2)
 
     print("\n***Running distance calibration***")
     node_offset_dist = config["node_offset_distance"]  # in m
@@ -41,7 +56,9 @@ def main():
 
     print("\n***Running data collection***")
     collect_video_data(config, origin_px, m_per_px,
-                       file_timestamp, use_motor=True)
+                       file_timestamp, use_motor=motor)
+    
+    return True
 
 
 if __name__ == "__main__":
