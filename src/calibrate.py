@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from numpy.linalg import norm
 from sys import stderr
+import os
 import argparse
 from utils import *
 from find_node import find_node
@@ -30,7 +31,7 @@ def get_coord(event, x, y, flags, userdata):
         userdata["dist_count"] = dist_count
 
 
-def calibrate(auto_cal, node_color_code, n_pairs=None):
+def calibrate(auto_cal, node_color_code, file_timestamp, n_pairs=None):
     coord = None
     num_dist = n_pairs
     dist_count = 0
@@ -90,4 +91,7 @@ def calibrate(auto_cal, node_color_code, n_pairs=None):
 
     vid.release()
     cv2.destroyAllWindows()
+
+    if exit_stat == 0:
+        np.save(os.path.join(file_timestamp, "calibrate"), cal_nodes)
     return exit_stat == 0, output

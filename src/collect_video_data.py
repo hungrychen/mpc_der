@@ -1,6 +1,7 @@
 import cv2
 import time
 import sys
+import os
 import numpy as np
 from pyax12 import connection
 from find_node import find_node
@@ -10,9 +11,14 @@ from utils import *
 def collect_video_data(config,
                        origin_px,
                        m_per_px,
+                       file_timestamp,
                        *,
                        save_files=True,
                        use_motor=False):
+    # """
+    # Upon return, working directory will be changed to location files are
+    # being saved to, if `save_files` is set to `True`.
+    # """
     success = True
     data_interval = config["data_interval"]
     if data_interval <= MIN_DATA_INTERVAL:
@@ -126,8 +132,12 @@ def collect_video_data(config,
 
     data = data[:it, :]
     data_raw = data_raw[:it, :]
+
     if save_files:
-        write_files(data, data_raw)
+        cwd = os.getcwd()
+        os.chdir(file_timestamp)
+        write_files(data, data_raw, file_timestamp)
+        os.chdir(cwd)
 
     return success, data, data_raw
 
@@ -147,23 +157,23 @@ def create_display(origin_px, frame, exp_nodes, freq):
     cv2.imshow(WINNAME, frame)
 
 
-def write_files(data, data_raw):
-    file_timestamp = time.time()
+def write_files(data, data_raw, file_timestamp):
+    # file_timestamp = time.time()
     np.save(
-        f"./output/collect_video_data/{file_timestamp:.0f}_data",
+        f"{file_timestamp}_data",
         data,
     )
     np.savetxt(
-        f"./output/collect_video_data/{file_timestamp:.0f}_data.csv",
+        f"{file_timestamp}_data.csv",
         data,
         delimiter=",",
     )
     np.save(
-        f"./output/collect_video_data/{file_timestamp:.0f}_dataraw",
+        f"{file_timestamp}_dataraw",
         data_raw,
     )
     np.savetxt(
-        f"./output/collect_video_data/{file_timestamp:.0f}_dataraw.csv",
+        f"{file_timestamp}_dataraw.csv",
         data_raw,
         delimiter=",",
     )
@@ -191,7 +201,16 @@ def draw_node_connections(origin_px, nodes_px, frame):
 
 if __name__ == "__main__":
     config = read_config("./config/config_collect_data.json")
-    collect_video_data(config, (415, -10), 1, save_files=False, use_motor=True)
+    os.chdir("./output/collect_video_data")
+    timestamp = f"{time.time():.0f}"
+    os.mkdir(timestamp)
+    collect_video_data(
+        config,
+        (415, -10),
+        1,
+        timestamp,
+        save_files=False, use_motor=True
+    )
 
     # nodes = [(404, 243), (400, 405), (398, 352), (407, 459), (401, 303), (406, 520)]
     # center = (404, np.float64(-122.02197735851058))
