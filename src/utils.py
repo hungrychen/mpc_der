@@ -53,6 +53,9 @@ DEF_EXPERIMENT_COLOR_STR = "orange"
 DATA_BUFFER_EXTRA_SCALE = 1.0
 MIN_DATA_INTERVAL = 0.02
 
+MOTOR_WAITING_TIME = 0.02
+MOTOR_TIMEOUT_TIME = 0.1
+
 
 def read_config(filepath):
     with open(filepath) as f:

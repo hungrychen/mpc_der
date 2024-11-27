@@ -33,7 +33,9 @@ def collect_video_data(config,
         motor_speed = config["motor_speeds"][0]
         motor_right_lim = config["motor_right_lim"]
         motor_left_lim = config["motor_left_lim"]
-        motor = connection.Connection(config["port"], config["baudrate"])
+        motor = connection.Connection(config["port"], config["baudrate"],
+                                      waiting_time=MOTOR_WAITING_TIME,
+                                      timeout=MOTOR_TIMEOUT_TIME)
         if not motor.ping(motor_id):
             print("Motor connection problem", file=sys.stderr)
             return False, None, None
