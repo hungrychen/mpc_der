@@ -1,6 +1,7 @@
 import time
 import os
 import sys
+import zipfile
 import numpy as np
 from pyax12 import connection
 from get_top_node import get_top_node
@@ -19,29 +20,29 @@ def main():
     os.chdir("./output/collect_video_data")
     os.mkdir(file_timestamp)
 
-
     motor = connection.Connection(
-        config["port"], config["baudrate"],
+        config["port"],
+        config["baudrate"],
         waiting_time=MOTOR_WAITING_TIME,
-        timeout=MOTOR_TIMEOUT_TIME
     )
     motor_id = config["motor_ids"][0]
     if not motor.ping(motor_id):
         print("Motor connection problem", file=sys.stderr)
         return False
-    motor.goto(motor_id, 512, 256)
-    time.sleep(2)
+    motor.goto(motor_id, 512, 100)
+    time.sleep(3)
 
-    print("\n***Running distance calibration***")
+    print(
+        "\n***Running distance calibration***",
+        "\nWait for the object to stop moving before proceeding",
+    )
     node_offset_dist = config["node_offset_distance"]  # in m
     calibration_dist = config["calibration_distance"]  # in m
 
     calibrate_success = False
     while not calibrate_success:
         calibrate_success, cal_dist_px = calibrate(
-            True,
-            DEF_CALIBRATION_COLOR,
-            file_timestamp
+            True, DEF_CALIBRATION_COLOR, file_timestamp
         )
     m_per_px = calibration_dist / cal_dist_px
     print(f"cm_per_px={m_per_px}")
@@ -55,10 +56,18 @@ def main():
     print(f"origin_px={origin_px}")
 
     print("\n***Running data collection***")
-    collect_video_data(config, origin_px, m_per_px,
-                       file_timestamp, use_motor=motor)
-    
-    return True
+    data_success, _, _ = collect_video_data(
+        config, origin_px, m_per_px, file_timestamp, use_motor=motor
+    )
+
+    if data_success:
+        with zipfile.ZipFile(
+            f"{file_timestamp}.zip", "x", zipfile.ZIP_DEFLATED
+        ) as zf:
+            for f in os.listdir(file_timestamp):
+                zf.write(f"{file_timestamp}/{f}", f)
+
+    return data_success
 
 
 if __name__ == "__main__":

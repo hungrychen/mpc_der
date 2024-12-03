@@ -6,6 +6,7 @@ and for the visualization of the positions.
 In the future, we hope to allow for the real time control of the structures position.
 
 ## Requirements
+Note: We developed on Ubuntu Linux.
 - Python 3.11
 - Pipenv
 
@@ -25,6 +26,8 @@ pip3 install Pipenv --user
 ```shell
 pipenv shell
 ```
+
+3. We also set a lower than default USB latency by following the instructions for Linux at https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_wizard2/#usb-latency-setting.
 
 ## Setting the Configuration
 The parameters can be configured by modifying `./config/config_collect_data.json`.

@@ -8,13 +8,15 @@ from find_node import find_node
 from utils import *
 
 
-def collect_video_data(config,
-                       origin_px,
-                       m_per_px,
-                       file_timestamp,
-                       *,
-                       save_files=True,
-                       use_motor: connection.Connection | None = None):
+def collect_video_data(
+    config,
+    origin_px,
+    m_per_px,
+    file_timestamp,
+    *,
+    save_files=True,
+    use_motor: connection.Connection | None = None,
+):
     # """
     # Upon return, working directory will be changed to location files are
     # being saved to, if `save_files` is set to `True`.
@@ -53,14 +55,16 @@ def collect_video_data(config,
     it = 0
     while True:
         curr_time = time.monotonic()
-        if (use_motor
-                and curr_time - prev_motor_move_time >= motor_move_interval):
+        if (
+            use_motor
+            and curr_time - prev_motor_move_time >= motor_move_interval
+        ):
             prev_motor_move_time = curr_time
             motor_direction = not motor_direction
             motor.goto(
                 motor_id,
                 motor_right_lim if motor_direction else motor_left_lim,
-                motor_speed
+                motor_speed,
             )
         if curr_time - prev_time >= data_interval:
             if it >= data_r:
@@ -113,7 +117,12 @@ def collect_video_data(config,
                 data[it, 1 + i * 2] = (node[0] - origin_px[0]) * m_per_px
                 data[it, 2 + i * 2] = -(node[1] - origin_px[1]) * m_per_px
                 if use_motor:
-                    data[it, -1] = motor.get_present_speed(motor_id)
+                    sp = motor.get_present_speed(motor_id)
+                    sp_neg = sp & 0x400
+                    sp &= 0x3FF
+                    if sp_neg:
+                        sp = -sp
+                    data[it, -1] = sp
             print(f"n={len(exp_nodes)}: ", *[f"{d:.5f}" for d in data[it, :]])
             it += 1
 
@@ -200,11 +209,7 @@ if __name__ == "__main__":
     timestamp = f"{time.time():.0f}"
     os.mkdir(timestamp)
     collect_video_data(
-        config,
-        (415, -10),
-        1,
-        timestamp,
-        save_files=False, use_motor=True
+        config, (415, -10), 1, timestamp, save_files=False
     )
 
     # nodes = [(404, 243), (400, 405), (398, 352), (407, 459), (401, 303), (406, 520)]
