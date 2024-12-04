@@ -33,7 +33,7 @@ BGR_PURPLE = (255, 0, 255)
 BGR_BLACK = (0, 0, 0)
 BGR_PINK = (50, 50, 255)
 
-COLOR_MAP = {
+COLOR_MAP: dict[int, tuple[int, int, int]] = {
     RED: BGR_RED,
     ORANGE: BGR_ORANGE,
     YELLOW: BGR_YELLOW,
@@ -54,6 +54,8 @@ DATA_BUFFER_EXTRA_SCALE = 1.0
 MIN_DATA_INTERVAL = 0.02
 
 MOTOR_WAITING_TIME = 0.003
+
+PLOT_SCALE = 1.2
 
 
 def read_config(filepath):

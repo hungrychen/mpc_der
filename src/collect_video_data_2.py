@@ -7,6 +7,7 @@ from pyax12 import connection
 from get_top_node import get_top_node
 from collect_video_data import collect_video_data
 from calibrate import calibrate
+from view_data import view_data
 from utils import *
 
 
@@ -56,9 +57,11 @@ def main():
     print(f"origin_px={origin_px}")
 
     print("\n***Running data collection***")
-    data_success, _, _ = collect_video_data(
+    data_success, data, data_raw = collect_video_data(
         config, origin_px, m_per_px, file_timestamp, use_motor=motor
     )
+
+    view_data(data, file_timestamp, file_timestamp)
 
     if data_success:
         with zipfile.ZipFile(

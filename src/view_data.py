@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import os
+from utils import *
 
 
-def view_data(data):
+def view_pos_data(data):
     n_nodes = (data.shape[1] - 1) // 2
     print(f"n_nodes={n_nodes}\ndata=\n{data}")
 
@@ -13,7 +15,6 @@ def view_data(data):
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
     # plt.legend()
-
     # plt.savefig("./output/view_data/image")
 
 
@@ -25,21 +26,22 @@ def view_motor_data(data):
     # plt.savefig("./output/view_data/motor_image")
 
 
-def make_plot(data, f_name):
-    sc = 1.3
-    plt.figure(figsize=(8*sc, 6*sc))
+def view_data(data, label, save_dir):
+    # label = os.path.basename(label)
+    plt.figure(figsize=(8*PLOT_SCALE, 6*PLOT_SCALE))
 
     plt.subplot(211)
-    view_data(data)
+    view_pos_data(data)
     plt.subplot(212)
     view_motor_data(data)
 
     plt.suptitle("Collected Data")
     plt.tight_layout()
-    plt.savefig("./output/view_data/image")
+    plt.savefig(os.path.join(save_dir, f"{label}_img"))
+    plt.clf()
 
 
 if __name__ == "__main__":
     f_name = sys.argv[1]
     data = np.load(f_name)
-    make_plot(data, f_name)
+    view_data(data, os.path.basename(f_name), "./output/view_data")
