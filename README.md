@@ -30,7 +30,10 @@ pipenv shell
 3. We also set a lower than default USB latency by following the instructions for Linux at https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_wizard2/#usb-latency-setting.
 
 ## Setting the Configuration
-The parameters can be configured by modifying `./config/config_collect_data.json`.
+The parameters can be configured by modifying `./config/config_collect_data.json`.  
+Most importantly:
+1. Set "calibration_distance" to the distance between the two reference nodes, in meters.
+1. Set "node_offset_distance" to the assumed distance between the top node and the position of the origin, in meters.
 
 ## Checking the Camera
 You can check that the camera is functioning properly by running:
