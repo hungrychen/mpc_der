@@ -22,7 +22,7 @@ def view_motor_data(data):
     plt.plot(data[:,0], data[:,-1])
     plt.title("Motor Speed")
     plt.xlabel("t [s]")
-    plt.ylabel("Speed")
+    plt.ylabel("Speed [rad/s]")
     # plt.savefig("./output/view_data/motor_image")
 
 

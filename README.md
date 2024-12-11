@@ -27,7 +27,10 @@ pip3 install Pipenv --user
 pipenv shell
 ```
 
-3. We also set a lower than default USB latency by following the instructions for Linux at https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_wizard2/#usb-latency-setting.
+3. We also set a lower than default USB latency by following the instructions for Linux at https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_wizard2/#usb-latency-setting. You can set this by running:
+```shell
+sudo ./scripts/adjust_latency
+```
 
 ## Setting the Configuration
 The parameters can be configured by modifying `./config/config_collect_data.json`.  

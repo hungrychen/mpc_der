@@ -1,4 +1,5 @@
 import json
+from math import pi
 
 
 MIN_NODE_SEPARATION = 20.0
@@ -56,6 +57,8 @@ MIN_DATA_INTERVAL = 0.02
 MOTOR_WAITING_TIME = 0.003
 
 PLOT_SCALE = 1.2
+DYN_SPEED_SCALE_TO_RPM = 0.111
+RPM_TO_RAD_PER_SEC = 2*pi / 60
 
 
 def read_config(filepath):

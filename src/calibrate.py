@@ -93,5 +93,5 @@ def calibrate(auto_cal, node_color_code, file_timestamp, n_pairs=None):
     cv2.destroyAllWindows()
 
     if exit_stat == 0:
-        np.save(os.path.join(file_timestamp, "calibrate"), cal_nodes)
+        np.save(os.path.join(file_timestamp, "calibrate_nodes"), cal_nodes)
     return exit_stat == 0, output

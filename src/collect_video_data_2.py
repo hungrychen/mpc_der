@@ -46,6 +46,7 @@ def main():
             True, DEF_CALIBRATION_COLOR, file_timestamp
         )
     m_per_px = calibration_dist / cal_dist_px
+    np.save(os.path.join(file_timestamp, "calibrate_val"), m_per_px)
     print(f"cm_per_px={m_per_px}")
 
     print("\n***Running offset calibration***")
@@ -53,7 +54,7 @@ def main():
     while not top_node_success:
         top_node_success, top_node = get_top_node(config)
     origin_px = (top_node[0], top_node[1] - node_offset_dist / m_per_px)
-    np.save(os.path.join(file_timestamp, "offset"), top_node)
+    np.save(os.path.join(file_timestamp, "offset_node"), top_node)
     print(f"origin_px={origin_px}")
 
     print("\n***Running data collection***")

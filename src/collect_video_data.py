@@ -122,7 +122,10 @@ def collect_video_data(
                     sp &= 0x3FF
                     if sp_neg:
                         sp = -sp
-                    data[it, -1] = sp
+                    data_raw[it, -1] = sp
+                    data[it, -1] = (
+                        sp * DYN_SPEED_SCALE_TO_RPM * RPM_TO_RAD_PER_SEC
+                    )
             print(f"n={len(exp_nodes)}: ", *[f"{d:.5f}" for d in data[it, :]])
             it += 1
 
@@ -208,9 +211,7 @@ if __name__ == "__main__":
     os.chdir("./output/collect_video_data")
     timestamp = f"{time.time():.0f}"
     os.mkdir(timestamp)
-    collect_video_data(
-        config, (415, -10), 1, timestamp, save_files=False
-    )
+    collect_video_data(config, (415, -10), 1, timestamp, save_files=False)
 
     # nodes = [(404, 243), (400, 405), (398, 352), (407, 459), (401, 303), (406, 520)]
     # center = (404, np.float64(-122.02197735851058))
